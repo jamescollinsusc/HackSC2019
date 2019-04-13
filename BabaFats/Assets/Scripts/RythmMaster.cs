@@ -1,12 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Playables;
+using UnityEngine.Events;
 
 public class RythmMaster : AudioParent {
 
+    #region Member Variables
     [SerializeField]
     private AnimationCurve m_RythmTrack;
+    #endregion
+
+    private void Awake()
+    {
+        UnityEvent TriggerEnterEvent = new UnityEvent();
+        TriggerEnterEvent.AddListener(() => { Debug.Log("Rythm OnTriggerEnter"); });
+        AddOnTriggerEnterEvent(TriggerEnterEvent);
+
+        UnityEvent TriggerExitEvent = new UnityEvent();
+        TriggerExitEvent.AddListener(() => { Debug.Log("Rythm OnTriggerExit"); });
+        AddOnTriggerExitEvent(TriggerExitEvent);
+    }
 
     private void Update()
     {

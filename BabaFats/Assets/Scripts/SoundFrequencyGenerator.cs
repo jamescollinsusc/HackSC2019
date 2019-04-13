@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SoundFrequencyGenerator : AudioParent {
 
+    #region
     [Range(1, 20000)]
     public float m_LeftChannelFrequency;
     [Range(1, 20000)]
@@ -12,7 +14,19 @@ public class SoundFrequencyGenerator : AudioParent {
     public float m_SampleRate = 44100;
     public float m_WavelengthSeconds = 2.0f;
 
-    int m_TimeIndex = 0;
+    private int m_TimeIndex = 0;
+    #endregion
+
+    private void Awake()
+    {
+        UnityEvent TriggerEnterEvent = new UnityEvent();
+        TriggerEnterEvent.AddListener(() => { Debug.Log("Frequency OnTriggerEnter"); });
+        AddOnTriggerEnterEvent(TriggerEnterEvent);
+
+        UnityEvent TriggerExitEvent = new UnityEvent();
+        TriggerExitEvent.AddListener(() => { Debug.Log("Frequency OnTriggerExit"); });
+        AddOnTriggerExitEvent(TriggerExitEvent);
+    }
 
     private void OnAudioFilterRead(float[] data, int channels)
     {
