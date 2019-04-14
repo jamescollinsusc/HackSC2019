@@ -7,11 +7,11 @@ public class SoundFrequencyGenerator : AudioParent {
 
     #region
     [Range(1, 20000)]
-    public float m_LeftChannelFrequency;
+    public float m_LeftChannelFrequency = 440.0f;
     [Range(1, 20000)]
-    public float m_RightChannelFrequency;
+    public float m_RightChannelFrequency = 440.0f;
 
-    public float m_SampleRate = 44100;
+    public float m_SampleRate = 44100.0f;
     public float m_WavelengthSeconds = 2.0f;
 
     private int m_TimeIndex = 0;
@@ -20,12 +20,25 @@ public class SoundFrequencyGenerator : AudioParent {
     private void Awake()
     {
         UnityEvent TriggerEnterEvent = new UnityEvent();
-        TriggerEnterEvent.AddListener(() => { Debug.Log("Frequency OnTriggerEnter"); });
+        TriggerEnterEvent.AddListener(() => 
+        {
+            m_TimeIndex = 0;
+            if (!m_AudioSource.isPlaying) m_AudioSource.Play();
+            else m_AudioSource.mute = false;
+        });
         AddOnTriggerEnterEvent(TriggerEnterEvent);
 
         UnityEvent TriggerExitEvent = new UnityEvent();
-        TriggerExitEvent.AddListener(() => { Debug.Log("Frequency OnTriggerExit"); });
+        TriggerExitEvent.AddListener(() => 
+        {
+            if(GetNumObjectsInTrigger() == 0) m_AudioSource.mute = true;
+        });
         AddOnTriggerExitEvent(TriggerExitEvent);
+    }
+
+    private void OnDisable()
+    {
+        m_AudioSource.Stop();
     }
 
     private void OnAudioFilterRead(float[] data, int channels)
@@ -52,18 +65,4 @@ public class SoundFrequencyGenerator : AudioParent {
     {
         return Mathf.Sin(2 * Mathf.PI * timeIndex * frequency / sampleRate);
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            m_TimeIndex = 0;
-            m_AudioSource.Play();
-        }
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            m_AudioSource.Stop();
-        }
-    }
-
 }
